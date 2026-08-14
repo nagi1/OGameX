@@ -59,4 +59,15 @@ class HelloWorldRouteTest extends AccountTestCase
         $response->assertSee('HelloWorld example');
         $response->assertSee('/admin/hello-world');
     }
+
+    public function test_admin_sees_the_module_setting_in_server_settings(): void
+    {
+        $this->artisan('ogamex:admin:assign-role', ['username' => $this->currentUsername]);
+
+        $response = $this->get('/admin/server-settings');
+
+        $response->assertOk();
+        $response->assertSee('HelloWorld greeting');
+        $response->assertSee('name="helloworld_greeting"', false);
+    }
 }

@@ -6,6 +6,10 @@ use Exception;
 use Illuminate\Support\Facades\Date;
 use OGame\Enums\FleetMissionStatus;
 use OGame\Enums\FleetSpeedType;
+use OGame\Events\FleetArrived;
+use OGame\Events\FleetDeparted;
+use OGame\Events\FleetReturned;
+use OGame\Events\MissionResolved;
 use OGame\Factories\PlanetServiceFactory;
 use OGame\Factories\PlayerServiceFactory;
 use OGame\GameMessages\ReturnOfFleet;
@@ -381,6 +385,8 @@ abstract class GameMission
         // Save the new fleet mission.
         $mission->save();
 
+        FleetDeparted::dispatch($mission);
+
         // Check if the created mission arrival time is in the past. This can happen if the planet hasn't been updated
         // for some time and missions have already played out in the meantime.
         // If the mission is in the past, process it immediately.
@@ -415,9 +421,13 @@ abstract class GameMission
             // This is an arrival mission as it has no parent mission.
             // Process arrival.
             $this->processArrival($mission);
+            FleetArrived::dispatch($mission);
+            MissionResolved::dispatch($mission);
         } else {
             // This is a return mission as it has a parent mission.
             $this->processReturn($mission);
+            FleetReturned::dispatch($mission);
+            MissionResolved::dispatch($mission);
         }
     }
 

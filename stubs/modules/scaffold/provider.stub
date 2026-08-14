@@ -4,6 +4,8 @@ namespace $NAMESPACE$;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Nwidart\Modules\Support\ModuleServiceProvider;
+use OGame\Extensions\ModuleExtension;
+use OGame\Facades\Extensions;
 
 class $CLASS$ extends ModuleServiceProvider
 {
@@ -13,7 +15,8 @@ class $CLASS$ extends ModuleServiceProvider
     protected string $name = '$MODULE$';
 
     /**
-     * The module.json alias used for view, config, and translation namespaces.
+     * The module.json alias used for view, config, translation, and OGameX
+     * extension namespaces.
      */
     protected string $nameLower = '$LOWER_NAME$';
 
@@ -30,6 +33,10 @@ class $CLASS$ extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        Extensions::module($this->nameLower, function (ModuleExtension $module): void {
+            // Register OGameX capabilities here.
+        });
     }
 
     /**
